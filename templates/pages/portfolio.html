@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Portfolio & Gallery — Boundless Moments{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/portfolio.css') }}" />{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <p class="page-hero-label">Our Work</p>
+  <h1>Portfolio &amp;<br><em>Gallery</em></h1>
+</div>
+<div class="filter-bar">
+  <div class="filter-inner">
+    <div class="filter-pills">
+      {% for cat in categories %}
+      <a href="{{ url_for('portfolio', category=cat, sort=active_sort) }}"
+         class="filter-pill {{ 'active' if active_category == cat }}">
+        {{ 'All Work' if cat == 'all' else cat | title }}
+      </a>
+      {% endfor %}
+    </div>
+    <select class="sort-select" onchange="window.location=this.value">
+      <option value="{{ url_for('portfolio', category=active_category, sort='newest') }}" {{ 'selected' if active_sort=='newest' }}>Newest First</option>
+      <option value="{{ url_for('portfolio', category=active_category, sort='oldest') }}" {{ 'selected' if active_sort=='oldest' }}>Oldest First</option>
+      <option value="{{ url_for('portfolio', category=active_category, sort='az') }}"     {{ 'selected' if active_sort=='az' }}>Title A–Z</option>
+    </select>
+  </div>
+</div>
+
+<section class="gallery-section">
+  <p class="gallery-count">Showing {{ items|length }} work{{ 's' if items|length != 1 }}</p>
+  <div class="gallery-grid" id="galleryGrid">
+    {% for item in items %}
+    <div class="gallery-item" data-id="{{ item.id }}" data-title="{{ item.title }}" data-cat="{{ item.category }}">
+      {% if item.cover_image %}
+        <img src="{{ url_for('static', filename='images/' ~ item.cover_image.filename) }}"
+             alt="{{ item.cover_image.alt_text or item.title }}"
+             class="gallery-thumb" loading="lazy" />
+      {% else %}
+        <div class="gallery-thumb ph-{{ loop.index % 12 + 1 }}"></div>
+      {% endif %}
+      <span class="gallery-tag">{{ item.category | title }}</span>
+      <div class="gallery-overlay">
+        <h4>{{ item.title }}</h4>
+        <span>{{ item.category | title }} · {{ item.year }}</span>
+      </div>
+    </div>
+    {% else %}
+    <p class="no-results">No portfolio items found for this category.</p>
+    {% endfor %}
+  </div>
+</section>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button class="lightbox-prev lightbox-nav" id="lbPrev" aria-label="Previous">‹</button>
+  <div class="lightbox-img" id="lbImg">
+    <div class="lightbox-info">
+      <h3 id="lbTitle"></h3>
+      <p id="lbMeta"></p>
+    </div>
+  </div>
+  <button class="lightbox-next lightbox-nav" id="lbNext" aria-label="Next">›</button>
+  <button class="lightbox-close" id="lbClose" aria-label="Close">✕</button>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Contact — Boundless Moments{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/contact.css') }}" />{% endblock %}
+
+{% block content %}
+<div class="contact-wrap">
+  <div class="contact-left">
+    <span class="section-label fade-up">Reach Out</span>
+    <h2 class="section-title fade-up">Let's Start a<br><em>Conversation</em></h2>
+    <div class="divider fade-up"></div>
+    <p class="contact-intro fade-up">Whether you have a specific project in mind or simply want to explore what we can create together, we'd love to hear from you.</p>
+
+    <div class="contact-detail fade-up">
+      <div class="contact-icon">📍</div>
+      <div class="contact-detail-text">
+        <h4>Studio Address</h4>
+        <p>{{ content.address }}</p>
+      </div>
+    </div>
+    <div class="contact-detail fade-up">
+      <div class="contact-icon">✉️</div>
+      <div class="contact-detail-text">
+        <h4>Email</h4>
+        <a href="mailto:{{ content.email }}">{{ content.email }}</a>
+      </div>
+    </div>
+    <div class="contact-detail fade-up">
+      <div class="contact-icon">📞</div>
+      <div class="contact-detail-text">
+        <h4>Phone</h4>
+        <a href="tel:{{ content.phone }}">{{ content.phone }}</a>
+      </div>
+    </div>
+    <div class="contact-detail fade-up">
+      <div class="contact-icon">🕐</div>
+      <div class="contact-detail-text">
+        <h4>Studio Hours</h4>
+        <p>Monday–Friday: 9:00–18:00<br>Saturday: By appointment</p>
+      </div>
+    </div>
+    <div class="availability fade-up">Currently accepting new commissions</div>
+  </div>
+
+  <div class="contact-right">
+    <div id="contactFormWrap">
+      <h2 class="form-title fade-up">Send Us a Message</h2>
+      <p class="form-sub fade-up">We respond to all enquiries within 24 hours.</p>
+      <form id="enquiryForm" novalidate>
+        <div class="form-row">
+          <div class="form-group fade-up">
+            <label for="firstName">First Name *</label>
+            <input type="text" id="firstName" name="firstName" placeholder="Your first name" required />
+          </div>
+          <div class="form-group fade-up">
+            <label for="lastName">Last Name *</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Your last name" required />
+          </div>
+        </div>
+        <div class="form-group fade-up">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" name="email" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group fade-up">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="+44 (0)..." />
+        </div>
+        <div class="form-group fade-up">
+          <label for="service">Service Enquiry</label>
+          <select id="service" name="service">
+            <option value="">Select a service...</option>
+            <option value="wedding">Wedding Photography</option>
+            <option value="portrait">Portrait Session</option>
+            <option value="landscape">Landscape / Travel</option>
+            <option value="editorial">Editorial / Commercial</option>
+            <option value="fineart">Fine Art Print</option>
+            <option value="other">Other / General Enquiry</option>
+          </select>
+        </div>
+        <div class="form-group fade-up">
+          <label for="date">Event / Project Date</label>
+          <input type="date" id="date" name="date" />
+        </div>
+        <div class="form-group fade-up">
+          <label for="message">Your Message *</label>
+          <textarea id="message" name="message" placeholder="Tell us about your vision, project details, location, budget..." required></textarea>
+        </div>
+        <div class="form-check fade-up">
+          <input type="checkbox" id="consent" name="consent" required />
+          <label for="consent">I consent to Boundless Moments storing my details to respond to this enquiry.</label>
+        </div>
+        <div class="form-error" id="formError"></div>
+        <button type="submit" class="form-submit fade-up">Send Enquiry →</button>
+      </form>
+    </div>
+
+    <div class="form-success" id="formSuccess">
+      <div class="success-icon">✉️</div>
+      <h3>Message Received</h3>
+      <p>Thank you for reaching out. We'll be in touch within 24 hours.</p>
+      <button onclick="resetForm()" class="btn btn-outline">Send Another Message</button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const CONTACT_API_URL = "{{ url_for('api_contact') }}";
+</script>
+<script src="{{ url_for('static', filename='js/contact.js') }}"></script>
+{% endblock %}

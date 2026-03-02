@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Boundless Moments Photography{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Professional Photography</p>
+    <h1 class="hero-title">
+      Every Frame<br>Tells a
+      <em>Story.</em>
+    </h1>
+    <p class="hero-subtitle">{{ content.hero_sub }}</p>
+    <div class="hero-cta">
+      <a href="{{ url_for('portfolio') }}" class="btn btn-primary">View Portfolio</a>
+      <a href="{{ url_for('contact') }}"   class="btn btn-outline">Book a Session</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-grid">
+      <div class="hero-img-1"><span class="hero-counter">01</span><span class="hero-img-label">Portraiture</span></div>
+      <div class="hero-img-2"><span class="hero-img-label">Landscape</span></div>
+      <div class="hero-img-3"><span class="hero-img-label">Wedding</span></div>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll to explore</div>
+</section>
+
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    {% set tags = ["Portraiture","Wedding Photography","Landscape","Editorial","Documentary","Fine Art Prints","Event Coverage","Commercial"] %}
+    {% for tag in tags %}<span>{{ tag }}</span><span class="dot">·</span>{% endfor %}
+    {% for tag in tags %}<span>{{ tag }}</span><span class="dot">·</span>{% endfor %}
+  </div>
+</div>
+<section class="about-strip">
+  <div class="about-inner">
+    <div class="about-img-wrap fade-up">
+      <div class="about-img-main"></div>
+      <div class="about-img-accent"></div>
+    </div>
+    <div>
+      <span class="section-label fade-up">Our Story</span>
+      <h2 class="section-title fade-up">Chasing Light,<br><em>Preserving Memory</em></h2>
+      <div class="divider fade-up"></div>
+      <blockquote class="about-quote fade-up">
+        "Photography is the art of frozen time — the ability to store emotion and feelings within a frame."
+      </blockquote>
+      <p class="section-body fade-up">{{ content.about }}</p>
+      <div class="about-stat-row fade-up">
+        <div class="about-stat"><span>{{ stats.years }}</span><p>Years Active</p></div>
+        <div class="about-stat"><span>{{ stats.projects }}</span><p>Projects</p></div>
+        <div class="about-stat"><span>{{ stats.awards }}</span><p>Awards</p></div>
+      </div>
+      <br>
+      <a href="{{ url_for('skills') }}" class="btn-ghost fade-up">Meet the team</a>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <span class="section-label fade-up">What We Offer</span>
+    <h2 class="section-title fade-up">Photography<br><em>Services</em></h2>
+  </div>
+  <div class="services-grid">
+    <div class="service-card fade-up">
+      <span class="service-num">01</span>
+      <div class="service-icon">🌿</div>
+      <h3>Portrait Sessions</h3>
+      <p>Intimate, natural-light portraits that reveal character and emotion — individual, couple, or family.</p>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-num">02</span>
+      <div class="service-icon">💍</div>
+      <h3>Wedding Coverage</h3>
+      <p>Full-day documentary storytelling of your wedding — from quiet morning preparations to the final dance.</p>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-num">03</span>
+      <div class="service-icon">🏔</div>
+      <h3>Landscape &amp; Travel</h3>
+      <p>Large-format fine art landscape prints and editorial travel photography for brands and publications.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURED WORK ──────────────────────────── -->
+<section class="section" style="background:var(--parchment)">
+  <div class="container">
+    <span class="section-label fade-up">Selected Work</span>
+    <div class="featured-header">
+      <h2 class="section-title fade-up">Recent<br><em>Projects</em></h2>
+      <a href="{{ url_for('portfolio') }}" class="btn btn-outline fade-up">Full Portfolio</a>
+    </div>
+  </div>
+  <div class="featured-grid">
+    {% for item in featured %}
+    <div class="featured-item fi-{{ loop.index }} fade-up">
+      {% if item.images %}
+        <img src="{{ url_for('static', filename='images/' ~ item.images[0].filename) }}"
+             alt="{{ item.images[0].alt_text or item.title }}"
+             class="featured-img" loading="lazy" />
+      {% else %}
+        <div class="featured-img ph{{ loop.index }}"></div>
+      {% endif %}
+      <div class="featured-overlay">
+        <h4>{{ item.title }}</h4>
+        <span>{{ item.category | title }} · {{ item.year }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+<section class="section testimonials">
+  <div class="container">
+    <span class="section-label fade-up" style="color:var(--tan)">Client Words</span>
+    <h2 class="section-title fade-up" style="color:var(--cream)">What Our<br><em>Clients Say</em></h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card fade-up">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Boundless Moments captured our wedding day with such sensitivity. Every image feels like a painting we can live in."</p>
+      <p class="testi-author">— Amelia &amp; James, London</p>
+    </div>
+    <div class="testi-card fade-up">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"The portrait session was an incredibly relaxed experience. The results exceeded every expectation we had."</p>
+      <p class="testi-author">— Sarah K., Manchester</p>
+    </div>
+    <div class="testi-card fade-up">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Hired for a commercial campaign — their creative eye and professionalism made the shoot an absolute pleasure."</p>
+      <p class="testi-author">— Marcus T., Creative Director</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-banner">
+  <span class="section-label fade-up" style="color:rgba(245,240,232,0.6)">Ready to Begin?</span>
+  <h2 class="section-title fade-up">Let's Create Something<br><em style="color:var(--parchment)">Extraordinary</em></h2>
+  <p class="section-body fade-up" style="margin:0 auto 2.5rem;text-align:center">Whether you have a project in mind or simply want to explore possibilities, we'd love to hear from you.</p>
+  <a href="{{ url_for('contact') }}" class="btn btn-primary fade-up">Get in Touch</a>
+</section>
+
+{% endblock %}

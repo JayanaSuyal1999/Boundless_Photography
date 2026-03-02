@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Experience & Skills — Boundless Moments{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/skills.css') }}" />{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <p class="page-hero-label">The People Behind the Lens</p>
+  <h1>Experience &amp;<br><em>Skills</em></h1>
+  <p class="page-hero-sub">A decade of storytelling, hundreds of projects, and an unrelenting commitment to the craft of visual art.</p>
+</div>
+
+<section class="section" style="background:var(--parchment)">
+  <div class="container">
+    <span class="section-label fade-up">Our Team</span>
+    <h2 class="section-title fade-up">Meet the<br><em>Photographers</em></h2>
+  </div>
+  <div class="team-grid">
+    {% for member in team %}
+    <div class="team-card fade-up">
+      <div class="team-photo">
+        {% if member.photo %}
+          <img src="{{ url_for('static', filename='images/' ~ member.photo) }}" alt="{{ member.name }}" class="team-photo-img" />
+        {% else %}
+          <div class="team-photo-img tp{{ loop.index }}"></div>
+        {% endif %}
+        <div class="team-photo-overlay"></div>
+        <div class="team-social">
+          {% if member.instagram %}<a href="{{ member.instagram }}" title="Instagram">ig</a>{% endif %}
+          {% if member.fivehundred %}<a href="{{ member.fivehundred }}" title="500px">5c</a>{% endif %}
+        </div>
+      </div>
+      <div class="team-info">
+        <h3>{{ member.name }}</h3>
+        <p class="team-role">{{ member.role }}</p>
+        <p class="team-bio">{{ member.bio }}</p>
+        {% for skill in member.skills %}
+        <div class="skill-bar-item">
+          <div class="skill-bar-label">
+            <span>{{ skill.name }}</span>
+            <span>{{ skill.level }}%</span>
+          </div>
+          <div class="skill-bar-track">
+            <div class="skill-bar-fill" data-level="{{ skill.level }}"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <span class="section-label fade-up">Recognition</span>
+    <h2 class="section-title fade-up">Awards &amp;<br><em>Accomplishments</em></h2>
+  </div>
+  <div class="awards-grid">
+    {% for award in awards %}
+    <div class="award-card fade-up">
+      <div class="award-icon">{{ award.icon }}</div>
+      <h4>{{ award.title }}</h4>
+      <p>{{ award.description }}{% if award.organisation %}, {{ award.organisation }}{% endif %}</p>
+      <span class="award-year">{{ award.year }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/skills.js') }}"></script>
+{% endblock %}

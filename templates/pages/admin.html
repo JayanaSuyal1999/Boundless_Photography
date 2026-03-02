@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Boundless Moments</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />
+</head>
+<body class="admin-body">
+{% if not current_user.is_authenticated %}
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Boundless <span>Moments</span></div>
+    <p class="login-sub">Admin Panel · Secure Access</p>
+    <div class="login-group">
+      <label for="loginUser">Username</label>
+      <input type="text" id="loginUser" placeholder="admin" autocomplete="username" />
+    </div>
+    <div class="login-group">
+      <label for="loginPass">Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <p class="login-error" id="loginError"></p>
+    <button class="login-btn" id="loginBtn">Sign In →</button>
+  </div>
+</div>
+
+{% else %}
+<div class="admin-shell">
+
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <div class="nav-logo">Boundless <span>Moments</span></div>
+      <p>Admin Dashboard</p>
+    </div>
+    <nav class="admin-nav">
+      <a class="active" data-section="dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+      <a data-section="portfolio"><span class="nav-icon">🖼</span> Portfolio <span class="admin-badge" id="portfolioCount">{{ stats.portfolio_count }}</span></a>
+      <a data-section="images"><span class="nav-icon">🖼</span> Upload Images</a>
+      <a data-section="messages"><span class="nav-icon">✉️</span> Messages <span class="admin-badge" id="msgBadge">{{ stats.unread_messages }}</span></a>
+      <a data-section="content"><span class="nav-icon">✏️</span> Site Content</a>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <a href="{{ url_for('index') }}">← View Website</a>
+      <a href="{{ url_for('admin_logout') }}">Sign Out</a>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1 id="sectionTitle">Dashboard</h1>
+        <span id="sectionSub">Overview &amp; recent activity</span>
+      </div>
+      <div class="admin-user">
+        <div class="admin-avatar">{{ current_user.username[0]|upper }}</div>
+        <div class="admin-user-info">
+          <p>{{ current_user.username | title }}</p>
+          <span>Administrator</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="admin-section active" id="sec-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><span class="stat-icon">🖼</span><div class="stat-label">Portfolio Items</div><div class="stat-value" id="statPortfolio">{{ stats.portfolio_count }}</div><div class="stat-change">Managed via admin</div></div>
+        <div class="stat-card"><span class="stat-icon">✉️</span><div class="stat-label">Unread Messages</div><div class="stat-value" id="statUnread">{{ stats.unread_messages }}</div><div class="stat-change">{{ stats.total_messages }} total</div></div>
+        <div class="stat-card"><span class="stat-icon">🏆</span><div class="stat-label">Awards</div><div class="stat-value">{{ stats.award_count }}</div><div class="stat-change">Displayed on Experience page</div></div>
+        <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-label">DB Status</div><div class="stat-value" style="font-size:1.2rem;color:var(--sage)">Online</div><div class="stat-change">PostgreSQL connected</div></div>
+      </div>
+      <div class="admin-panel admin-panel-full">
+        <div class="panel-header"><h3>Recent Messages</h3><button onclick="showSection('messages')">View All</button></div>
+        <div class="panel-body" id="dashMsgList">
+          {% if recent_messages %}
+            {% for msg in recent_messages %}
+            <div class="msg-item {{ '' if msg.is_read else 'unread' }}" data-id="{{ msg.id }}">
+              <div class="msg-avatar">{{ msg.full_name[0] }}</div>
+              <div class="msg-body">
+                <div class="msg-name">{{ msg.full_name }}</div>
+                <div class="msg-preview">{{ msg.message[:80] }}{% if msg.message|length > 80 %}…{% endif %}</div>
+              </div>
+              <div class="msg-meta">
+                <div class="msg-date">{{ msg.received_at.strftime('%d %b %Y') }}</div>
+                {% if msg.service %}<span class="msg-service">{{ msg.service }}</span>{% endif %}
+              </div>
+              {% if not msg.is_read %}<div class="unread-dot"></div>{% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <p class="empty-state">No messages yet. Submissions from the contact form will appear here.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div class="admin-section" id="sec-portfolio">
+      <div class="admin-panel">
+        <div class="panel-header"><h3>Portfolio Items</h3><button id="addPortfolioBtn">+ Add Item</button></div>
+        <div class="panel-body" id="portfolioList"><p class="empty-state">Loading...</p></div>
+      </div>
+    </div>
+
+    <div class="admin-section" id="sec-images">
+      <div class="admin-panel">
+        <div class="panel-header"><h3>Upload Images</h3></div>
+        <div class="panel-body">
+          <div class="upload-step" id="uploadStep1">
+            <p class="upload-hint">Select a portfolio item to upload images to:</p>
+            <div id="uploadItemList" class="upload-item-list"></div>
+          </div>
+          <div class="upload-step" id="uploadStep2" style="display:none">
+            <div class="upload-back-row">
+              <button class="upload-back" id="uploadBack">← Back to items</button>
+              <span class="upload-item-name" id="uploadItemName"></span>
+            </div>
+            <div class="drop-zone" id="dropZone">
+              <div class="drop-icon">📷</div>
+              <p class="drop-label">Drag &amp; drop images here</p>
+              <p class="drop-sub">or click to browse — JPG, PNG, WebP, GIF · max 16 MB each</p>
+              <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp,image/gif" style="display:none" />
+            </div>
+            <div class="upload-queue" id="uploadQueue"></div>
+            <div class="upload-actions" id="uploadActions" style="display:none">
+              <button class="btn-upload" id="doUploadBtn">Upload <span id="uploadCount">0</span> Image(s) →</button>
+              <button class="btn-cancel-upload" id="clearQueueBtn">Clear</button>
+            </div>
+            <div class="upload-progress-wrap" id="uploadProgressWrap" style="display:none">
+              <div class="upload-progress-bar" id="uploadProgressBar"></div>
+              <p class="upload-progress-label" id="uploadProgressLabel">Uploading…</p>
+            </div>
+            <div class="existing-images-header">
+              <h4>Existing Images</h4>
+              <span id="existingCount" class="existing-count"></span>
+            </div>
+            <div class="existing-images" id="existingImages">
+              <p class="empty-state">No images yet for this item.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-section" id="sec-messages">
+      <div class="admin-panel">
+        <div class="panel-header"><h3>Client Enquiries</h3><button id="clearMsgsBtn">Clear All</button></div>
+        <div class="panel-body" id="messageList"><p class="empty-state">Loading...</p></div>
+      </div>
+    </div>
+
+    <div class="admin-section" id="sec-content">
+      <div class="admin-panel">
+        <div class="panel-header"><h3>Site Content</h3></div>
+        <div class="panel-body">
+          <div class="content-field"><label>Tagline</label><input type="text" id="cfTagline" /></div>
+          <div class="content-field"><label>Hero Subtitle</label><textarea id="cfHeroSub"></textarea></div>
+          <div class="content-field"><label>About Paragraph</label><textarea id="cfAbout"></textarea></div>
+          <div class="content-field"><label>Contact Email</label><input type="email" id="cfEmail" /></div>
+          <div class="content-field"><label>Phone Number</label><input type="tel" id="cfPhone" /></div>
+          <div class="content-field"><label>Studio Address</label><input type="text" id="cfAddress" /></div>
+          <div class="content-field"><label>Stat — Years Active</label><input type="text" id="cfYears" /></div>
+          <div class="content-field"><label>Stat — Projects</label><input type="text" id="cfProjects" /></div>
+          <div class="content-field"><label>Stat — Awards</label><input type="text" id="cfAwards" /></div>
+          <button class="content-save" id="saveContentBtn">Save All Changes</button>
+          <span class="save-success" id="saveSuccess">✓ Saved to database</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h3 id="modalTitle">Add Portfolio Item</h3>
+    <div class="modal-group"><label>Project Title</label><input type="text" id="piTitle" placeholder="e.g. The Harlow Wedding" /></div>
+    <div class="modal-row">
+      <div class="modal-group">
+        <label>Category</label>
+        <select id="piCat">
+          <option value="wedding">Wedding</option>
+          <option value="portrait">Portrait</option>
+          <option value="landscape">Landscape</option>
+          <option value="editorial">Editorial</option>
+          <option value="fineart">Fine Art</option>
+        </select>
+      </div>
+      <div class="modal-group"><label>Year</label><input type="number" id="piYear" value="2025" min="2010" max="2035" /></div>
+    </div>
+    <div class="modal-group"><label>Description</label><textarea id="piDesc" placeholder="Optional project description..." style="min-height:80px;resize:vertical"></textarea></div>
+    <div class="modal-group" style="display:flex;align-items:center;gap:0.75rem">
+      <input type="checkbox" id="piFeatured" style="width:16px;height:16px;accent-color:var(--tan)" />
+      <label for="piFeatured" style="font-size:0.78rem;color:var(--sand);cursor:pointer">Show on homepage (featured)</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" id="savePortfolioBtn">Save Item</button>
+      <button class="btn-cancel" id="cancelModalBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+<script>
+  const API = {
+    login:     "{{ url_for('admin_login') }}",
+    portfolio: "{{ url_for('api_portfolio_list') }}",
+    messages:  "{{ url_for('api_messages_list') }}",
+    content:   "{{ url_for('api_content_get') }}",
+  };
+  const IS_AUTHENTICATED = {{ 'true' if current_user.is_authenticated else 'false' }};
+</script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
