@@ -1,3 +1,4 @@
+/* skills.js — Animate skill bars when scrolled into view */
 
 const fills = document.querySelectorAll('.skill-bar-fill');
 const barObs = new IntersectionObserver(entries => {

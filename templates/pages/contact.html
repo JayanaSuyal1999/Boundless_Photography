@@ -4,6 +4,8 @@
 
 {% block content %}
 <div class="contact-wrap">
+
+  <!-- LEFT INFO (content pulled from site_content table) -->
   <div class="contact-left">
     <span class="section-label fade-up">Reach Out</span>
     <h2 class="section-title fade-up">Let's Start a<br><em>Conversation</em></h2>
@@ -41,10 +43,13 @@
     <div class="availability fade-up">Currently accepting new commissions</div>
   </div>
 
+  <!-- RIGHT FORM -->
   <div class="contact-right">
     <div id="contactFormWrap">
       <h2 class="form-title fade-up">Send Us a Message</h2>
       <p class="form-sub fade-up">We respond to all enquiries within 24 hours.</p>
+
+      <!-- Form submits via JS fetch to /api/contact -->
       <form id="enquiryForm" novalidate>
         <div class="form-row">
           <div class="form-group fade-up">
@@ -106,6 +111,7 @@
 
 {% block extra_js %}
 <script>
+  // Pass the API URL from Flask into JS cleanly
   const CONTACT_API_URL = "{{ url_for('api_contact') }}";
 </script>
 <script src="{{ url_for('static', filename='js/contact.js') }}"></script>

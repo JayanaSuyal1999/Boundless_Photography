@@ -1,3 +1,7 @@
+# models.py — All PostgreSQL table definitions for Boundless Moments
+# Tables: admin_users, portfolio_items, gallery_images,
+#         team_members, skills, awards, messages, site_content
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -47,6 +51,11 @@ class PortfolioItem(db.Model):
     updated_at  = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationship: one portfolio item → many gallery images
+    @property
+    def cover_image(self):
+        """Return the first gallery image, or None."""
+        return self.images[0] if self.images else None
+
     images = db.relationship(
         "GalleryImage",
         back_populates="portfolio_item",

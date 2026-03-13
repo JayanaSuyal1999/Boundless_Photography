@@ -1,3 +1,4 @@
+/* contact.js — Contact form submission to Flask API */
 
 const form      = document.getElementById('enquiryForm');
 const errorEl   = document.getElementById('formError');
@@ -7,6 +8,7 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   errorEl.textContent = '';
 
+  // Client-side validation
   const required = ['firstName', 'lastName', 'email', 'message'];
   let valid = true;
   required.forEach(id => {
@@ -61,6 +63,7 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+// Clear error on input
 form.querySelectorAll('input, textarea').forEach(el => {
   el.addEventListener('input', () => el.classList.remove('error'));
 });

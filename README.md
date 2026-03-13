@@ -94,7 +94,7 @@ Visit: http://127.0.0.1:5000
 
 ## Admin Panel
 - URL: http://127.0.0.1:5000/admin
-- Default login: `admin` / `boundless2026`
+- Default login: `admin` / `admin`
 - Features: portfolio CRUD, message inbox, site content editor
 
 ## API Endpoints

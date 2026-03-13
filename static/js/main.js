@@ -1,6 +1,9 @@
+/* main.js — Global JS for Boundless Moments */
 
+// ── NAV SCROLL ───────────────────────────────
 const nav = document.querySelector('.nav');
 if (nav) {
+  // Always scrolled on inner pages
   if (document.body.querySelector('.page-hero') || window.location.pathname !== '/') {
     nav.classList.add('scrolled');
   }
@@ -9,6 +12,7 @@ if (nav) {
   });
 }
 
+// ── HAMBURGER ────────────────────────────────
 const hamburger = document.querySelector('.hamburger');
 const navLinks  = document.querySelector('.nav-links');
 if (hamburger && navLinks) {
@@ -22,11 +26,13 @@ if (hamburger && navLinks) {
   navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
 }
 
+// ── FADE-UP OBSERVER ─────────────────────────
 const fadeObs = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.12 });
 document.querySelectorAll('.fade-up').forEach(el => fadeObs.observe(el));
 
+// ── CURSOR GLOW (desktop only) ───────────────
 if (window.matchMedia('(pointer: fine)').matches) {
   const glow = Object.assign(document.createElement('div'), { style: `
     position:fixed;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:9998;

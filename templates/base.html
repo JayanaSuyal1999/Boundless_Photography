@@ -10,6 +10,7 @@
 </head>
 <body>
 
+<!-- ── NAVIGATION ─────────────────────────────── -->
 <nav class="nav" id="mainNav">
   <a href="{{ url_for('index') }}" class="nav-logo">Boundless <span>Moments</span></a>
   <ul class="nav-links">
@@ -23,10 +24,13 @@
     <span></span><span></span><span></span>
   </button>
 </nav>
+
+<!-- ── PAGE CONTENT ───────────────────────────── -->
 <div class="page-wrap">
   {% block content %}{% endblock %}
 </div>
 
+<!-- ── FOOTER ─────────────────────────────────── -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-brand">

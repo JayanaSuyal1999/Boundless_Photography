@@ -1,4 +1,6 @@
+/* admin.js — Admin dashboard interactions */
 
+// ── LOGIN ─────────────────────────────────────
 if (!IS_AUTHENTICATED) {
   const loginBtn  = document.getElementById('loginBtn');
   const loginPass = document.getElementById('loginPass');
@@ -27,6 +29,7 @@ if (!IS_AUTHENTICATED) {
   loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 }
 
+// ── SECTION NAV ──────────────────────────────
 function showSection(id) {
   document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
@@ -45,6 +48,7 @@ document.querySelectorAll('.admin-nav a[data-section]').forEach(a => {
   a.addEventListener('click', () => showSection(a.dataset.section));
 });
 
+// ── PORTFOLIO ─────────────────────────────────
 const THUMB_COLORS = ['#C9B99A','#9EB0A4','#D4C4A8','#8B4A2B','#7A8C6E','#B5A48A','#C4A882','#A8C4B8'];
 let editingId = null;
 
@@ -121,6 +125,7 @@ async function deletePortfolioItem(id) {
   loadPortfolio();
 }
 
+// ── MESSAGES ──────────────────────────────────
 async function loadMessages() {
   const res  = await fetch(API.messages);
   const msgs = await res.json();
@@ -166,6 +171,7 @@ document.getElementById('clearMsgsBtn')?.addEventListener('click', async () => {
   loadMessages();
 });
 
+// ── CONTENT ───────────────────────────────────
 async function loadContent() {
   const res  = await fetch(API.content);
   const data = await res.json();
@@ -204,19 +210,23 @@ document.getElementById('saveContentBtn')?.addEventListener('click', async () =>
   setTimeout(() => s.style.display = 'none', 2500);
 });
 
+// ── INIT ──────────────────────────────────────
 if (IS_AUTHENTICATED) {
-  loadMessages(); 
+  loadMessages(); // load message count on page load
 }
 
+// ── IMAGE UPLOAD PANEL ────────────────────────
 let selectedItemId   = null;
 let selectedItemName = '';
-let uploadQueue      = [];  
+let uploadQueue      = [];   // Array of File objects
 
+// Extend API object with image endpoints
 Object.assign(API, {
   images: (itemId) => `${API.portfolio}/${itemId}/images`,
   image:  (imgId)  => `/api/admin/images/${imgId}`,
 });
 
+// ── Step 1: list all portfolio items to pick from ──
 async function loadUploadItemList() {
   const res   = await fetch(API.portfolio);
   const items = await res.json();
@@ -234,6 +244,7 @@ async function loadUploadItemList() {
     </div>`).join('') || '<p class="empty-state">No portfolio items yet — add some in the Portfolio section first.</p>';
 }
 
+// ── Step 2: open upload view for chosen item ──
 function selectUploadItem(id, name) {
   selectedItemId   = id;
   selectedItemName = name;
@@ -250,9 +261,10 @@ document.getElementById('uploadBack')?.addEventListener('click', () => {
   document.getElementById('uploadStep2').style.display = 'none';
   uploadQueue = [];
   renderQueue();
-  loadUploadItemList(); 
+  loadUploadItemList(); // refresh counts
 });
 
+// ── Drop zone interactions ──
 const dropZone  = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 
@@ -266,7 +278,7 @@ dropZone?.addEventListener('drop', e => {
 });
 fileInput?.addEventListener('change', () => {
   addFilesToQueue([...fileInput.files]);
-  fileInput.value = '';  
+  fileInput.value = '';   // reset so same file can be re-added
 });
 
 function addFilesToQueue(files) {
@@ -307,6 +319,7 @@ function renderQueue() {
   if (countEl) countEl.textContent = uploadQueue.length;
 }
 
+// ── Do the upload ──
 document.getElementById('doUploadBtn')?.addEventListener('click', async () => {
   if (!uploadQueue.length || !selectedItemId) return;
 
@@ -322,6 +335,7 @@ document.getElementById('doUploadBtn')?.addEventListener('click', async () => {
   const formData = new FormData();
   uploadQueue.forEach(f => formData.append('files', f));
 
+  // Fake incremental progress while uploading
   let prog = 0;
   const ticker = setInterval(() => {
     prog = Math.min(prog + 5, 85);
@@ -358,6 +372,7 @@ document.getElementById('clearQueueBtn')?.addEventListener('click', () => {
   renderQueue();
 });
 
+// ── Load & display existing images ──
 async function loadExistingImages(itemId) {
   const res    = await fetch(API.images(itemId));
   const images = await res.json();
@@ -387,7 +402,7 @@ async function deleteImage(imgId) {
   if (!confirm('Delete this image? This cannot be undone.')) return;
   await fetch(API.image(imgId), { method: 'DELETE' });
   document.getElementById(`eimg-${imgId}`)?.remove();
-  loadExistingImages(selectedItemId); 
+  loadExistingImages(selectedItemId); // refresh to update cover label
 }
 
 async function updateAlt(imgId, value) {
@@ -398,9 +413,10 @@ async function updateAlt(imgId, value) {
   });
 }
 
+// ── Hook into section nav to load upload list ──
 const origShowSection = showSection;
 const _origShow = showSection;
-
+// Patch showSection to also load upload list when navigating to images tab
 document.querySelectorAll('.admin-nav a[data-section]').forEach(a => {
   if (a.dataset.section === 'images') {
     a.addEventListener('click', loadUploadItemList);

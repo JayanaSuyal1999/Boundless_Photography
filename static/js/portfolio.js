@@ -1,3 +1,4 @@
+/* portfolio.js — Lightbox for gallery page */
 
 const items    = Array.from(document.querySelectorAll('.gallery-item'));
 const lightbox = document.getElementById('lightbox');

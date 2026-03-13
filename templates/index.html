@@ -8,6 +8,7 @@
 
 {% block content %}
 
+<!-- ── HERO ─────────────────────────────────── -->
 <section class="hero">
   <div class="hero-left">
     <p class="hero-eyebrow">Professional Photography</p>
@@ -31,6 +32,7 @@
   <div class="hero-scroll">Scroll to explore</div>
 </section>
 
+<!-- ── MARQUEE ────────────────────────────────── -->
 <div class="marquee-strip">
   <div class="marquee-inner">
     {% set tags = ["Portraiture","Wedding Photography","Landscape","Editorial","Documentary","Fine Art Prints","Event Coverage","Commercial"] %}
@@ -38,6 +40,8 @@
     {% for tag in tags %}<span>{{ tag }}</span><span class="dot">·</span>{% endfor %}
   </div>
 </div>
+
+<!-- ── ABOUT ──────────────────────────────────── -->
 <section class="about-strip">
   <div class="about-inner">
     <div class="about-img-wrap fade-up">
@@ -62,6 +66,8 @@
     </div>
   </div>
 </section>
+
+<!-- ── SERVICES ───────────────────────────────── -->
 <section class="section">
   <div class="container">
     <span class="section-label fade-up">What We Offer</span>
@@ -116,6 +122,8 @@
     {% endfor %}
   </div>
 </section>
+
+<!-- ── TESTIMONIALS ───────────────────────────── -->
 <section class="section testimonials">
   <div class="container">
     <span class="section-label fade-up" style="color:var(--tan)">Client Words</span>
@@ -140,6 +148,7 @@
   </div>
 </section>
 
+<!-- ── CTA ────────────────────────────────────── -->
 <section class="cta-banner">
   <span class="section-label fade-up" style="color:rgba(245,240,232,0.6)">Ready to Begin?</span>
   <h2 class="section-title fade-up">Let's Create Something<br><em style="color:var(--parchment)">Extraordinary</em></h2>

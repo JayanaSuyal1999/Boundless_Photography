@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />
 </head>
 <body class="admin-body">
+
+<!-- LOGIN SCREEN (shown when not authenticated) -->
 {% if not current_user.is_authenticated %}
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
@@ -27,6 +29,7 @@
 </div>
 
 {% else %}
+<!-- DASHBOARD (shown when authenticated) -->
 <div class="admin-shell">
 
   <aside class="admin-sidebar">
@@ -103,34 +106,41 @@
       </div>
     </div>
 
+    <!-- IMAGES -->
     <div class="admin-section" id="sec-images">
       <div class="admin-panel">
         <div class="panel-header"><h3>Upload Images</h3></div>
         <div class="panel-body">
+          <!-- Step 1: pick a portfolio item -->
           <div class="upload-step" id="uploadStep1">
             <p class="upload-hint">Select a portfolio item to upload images to:</p>
             <div id="uploadItemList" class="upload-item-list"></div>
           </div>
+          <!-- Step 2: upload UI for chosen item -->
           <div class="upload-step" id="uploadStep2" style="display:none">
             <div class="upload-back-row">
               <button class="upload-back" id="uploadBack">← Back to items</button>
               <span class="upload-item-name" id="uploadItemName"></span>
             </div>
+            <!-- Drop zone -->
             <div class="drop-zone" id="dropZone">
               <div class="drop-icon">📷</div>
               <p class="drop-label">Drag &amp; drop images here</p>
               <p class="drop-sub">or click to browse — JPG, PNG, WebP, GIF · max 16 MB each</p>
               <input type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp,image/gif" style="display:none" />
             </div>
+            <!-- Upload queue preview -->
             <div class="upload-queue" id="uploadQueue"></div>
             <div class="upload-actions" id="uploadActions" style="display:none">
               <button class="btn-upload" id="doUploadBtn">Upload <span id="uploadCount">0</span> Image(s) →</button>
               <button class="btn-cancel-upload" id="clearQueueBtn">Clear</button>
             </div>
+            <!-- Upload progress -->
             <div class="upload-progress-wrap" id="uploadProgressWrap" style="display:none">
               <div class="upload-progress-bar" id="uploadProgressBar"></div>
               <p class="upload-progress-label" id="uploadProgressLabel">Uploading…</p>
             </div>
+            <!-- Existing images for this item -->
             <div class="existing-images-header">
               <h4>Existing Images</h4>
               <span id="existingCount" class="existing-count"></span>
@@ -143,6 +153,7 @@
       </div>
     </div>
 
+    <!-- MESSAGES -->
     <div class="admin-section" id="sec-messages">
       <div class="admin-panel">
         <div class="panel-header"><h3>Client Enquiries</h3><button id="clearMsgsBtn">Clear All</button></div>
@@ -150,6 +161,7 @@
       </div>
     </div>
 
+    <!-- CONTENT -->
     <div class="admin-section" id="sec-content">
       <div class="admin-panel">
         <div class="panel-header"><h3>Site Content</h3></div>
@@ -172,6 +184,7 @@
   </main>
 </div>
 
+<!-- ADD/EDIT PORTFOLIO MODAL -->
 <div class="modal-overlay" id="addModal">
   <div class="modal">
     <h3 id="modalTitle">Add Portfolio Item</h3>
@@ -204,6 +217,7 @@
 {% endif %}
 
 <script>
+  // Pass Flask-generated API URLs into JS
   const API = {
     login:     "{{ url_for('admin_login') }}",
     portfolio: "{{ url_for('api_portfolio_list') }}",

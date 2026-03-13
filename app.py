@@ -1,4 +1,5 @@
-
+# app.py — Boundless Moments Photography
+# Flask application entry point with all routes and API endpoints.
 
 import os
 import uuid
@@ -14,8 +15,10 @@ ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# ── Load environment variables ────────────────────────────────────────────────
 load_dotenv()
 
+# ── App factory ───────────────────────────────────────────────────────────────
 app = Flask(__name__)
 app.config["SECRET_KEY"]           = os.getenv("SECRET_KEY", "dev-secret-key")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
@@ -413,15 +416,43 @@ def init_db():
             PortfolioItem(title="Elara — Studio Session",   category="portrait",  year=2023, featured=False, sort_order=12),
         ]
         db.session.add_all(seed_portfolio)
+        db.session.flush()  # get IDs
+        # Map filename to portfolio item by title
+        gallery_map = {
+            "The Harlow Wedding":       "portfolio_harlow_wedding_1.jpg",
+            "Misty Highlands Series":   "portfolio_misty_highlands_1.jpg",
+            "Clara — Natural Light":    "portfolio_clara_portrait_1.jpg",
+            "Urban Grain":              "portfolio_urban_grain_1.jpg",
+            "Forest Light Study":       "portfolio_forest_light_1.jpg",
+            "Ashton & Grace":           "portfolio_ashton_grace_1.jpg",
+            "The Chen Family":          "portfolio_chen_family_1.jpg",
+            "Coastal Dawn Series":      "portfolio_coastal_dawn_1.jpg",
+            "Autumn Couture":           "portfolio_autumn_couture_1.jpg",
+            "Moody Interior Study":     "portfolio_moody_interior_1.jpg",
+            "Valley Mist":              "portfolio_valley_mist_1.jpg",
+            "Elara — Studio Session":   "portfolio_elara_studio_1.jpg",
+        }
+        seed_gallery = []
+        for item in seed_portfolio:
+            fname = gallery_map.get(item.title)
+            if fname:
+                seed_gallery.append(GalleryImage(
+                    portfolio_item_id=item.id,
+                    filename=fname,
+                    alt_text=item.title,
+                    sort_order=1
+                ))
+        db.session.add_all(seed_gallery)
         print(f"✓ {len(seed_portfolio)} portfolio items seeded.")
+        print(f"✓ {len(seed_gallery)} gallery images seeded.")
 
     # Seed team members + skills
     if not TeamMember.query.first():
-        elena = TeamMember(name="Elena Marchetti", role="Founder · Wedding & Portrait", sort_order=1,
+        elena = TeamMember(name="Elena Marchetti", role="Founder · Wedding & Portrait", sort_order=1, photo="team_elena.jpg",
             bio="Elena's sensitivity to light and emotion has defined Boundless Moments' signature style. With 10+ years in wedding and portrait photography, her work has appeared in Vogue Italia and The Telegraph.")
-        james = TeamMember(name="James Okafor", role="Lead · Landscape & Documentary", sort_order=2,
+        james = TeamMember(name="James Okafor", role="Lead · Landscape & Documentary", sort_order=2, photo="team_james.jpg",
             bio="James brings an explorer's spirit to every assignment. His landscape series have been exhibited in galleries across London and Edinburgh.")
-        priya = TeamMember(name="Priya Sharma", role="Specialist · Editorial & Commercial", sort_order=3,
+        priya = TeamMember(name="Priya Sharma", role="Specialist · Editorial & Commercial", sort_order=3, photo="team_priya.jpg",
             bio="With a background in fashion and a degree in Visual Arts, Priya merges aesthetic precision with commercial sensibility.")
         db.session.add_all([elena, james, priya])
         db.session.flush()  # get IDs before adding skills
